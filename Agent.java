@@ -1,26 +1,7 @@
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Random;
 
 public class Agent{
-	public enum Action{
-		LEFT(0), RIGHT(1), UP(2), DOWN(3);
-		private final int id;
-		
-		private Action(final int id){
-			this.id = id;
-		}
-		public static final List<Action> ActionList = Collections.unmodifiableList(Arrays.asList(values()));
-		public static Action getAction(int n){
-			return ActionList.get(n);
-		}
-		public int getId(){
-			return id;
-		}
-	}
-	
 	// エージェントの状態
 	private State state;
 	private State stateDash;
@@ -63,6 +44,8 @@ public class Agent{
 		// この関数内で観測後のものに書き換える
 		stateDash.setX(state.getX());
 		stateDash.setY(state.getY());
+
+		reward -= QLearning.ONE_STEP_PENALTY;     // ステップ経過のペナルティ
 
 		switch (act) {
 		case LEFT:
@@ -114,7 +97,7 @@ public class Agent{
 		if (rand.nextDouble() < QLearning.EPSILON) {
 			selectedAction = Action.getAction(rand.nextInt(Action.ActionList.size()));
 		} else {
-			for (int i = 1; i < Action.ActionList.size(); i++) {
+			for (int i = 0; i < Action.ActionList.size(); i++) {
 				if (qTable[state.getX()][state.getY()][selectedAction.getId()] < qTable[state.getX()][state.getY()][i]) {
 					selectedAction = Action.getAction(i);
 				}

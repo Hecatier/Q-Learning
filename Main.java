@@ -10,9 +10,8 @@ public class Main {
 			while (!agent.isGoal(agent.getState().getX(), agent.getState().getY())) {
 				agent.incrementStepNum();
 
-				Agent.Action selectAction = agent.eGreedy(learn.q);   // ε-greedy法で行動を選択
+				Action selectAction = agent.eGreedy(learn.q);   // ε-greedy法で行動を選択
 				int reward = agent.Action(selectAction);   // 行動を行い次の状態を観測し報酬を受け取る
-				reward -= QLearning.ONE_STEP_PENALTY;     // ステップ経過のペナルティ
 				learn.updateQ(reward, selectAction, agent);       // Q値の更新
 				agent.updateS();           // 状態の更新 s←s'
 			}

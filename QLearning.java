@@ -16,7 +16,7 @@ public class QLearning {
 
 	QLearning(){
 		// Q値の初期化
-		q = new double[Problem.MAZE_HEIGHT][Problem.MAZE_WIDTH][Agent.Action.ActionList.size()];
+		q = new double[Problem.MAZE_HEIGHT][Problem.MAZE_WIDTH][Action.ActionList.size()];
 	}
 
 	public void initQ() {
@@ -24,7 +24,7 @@ public class QLearning {
 		Random rand = new Random();
 		for (int x = 0; x < Problem.MAZE_HEIGHT; x++) {
 			for (int y = 0; y < Problem.MAZE_WIDTH; y++) {
-				for (int a = 0; a < Agent.Action.ActionList.size(); a++) {
+				for (int a = 0; a < Action.ActionList.size(); a++) {
 					int randNum = rand.nextInt(INIT_Q_MAX+1);
 					q[x][y][a] = randNum;
 				}
@@ -32,7 +32,7 @@ public class QLearning {
 		}
 	}
 
-	public void updateQ(int reward, Agent.Action action, Agent agent) {
+	public void updateQ(int reward, Action action, Agent agent) {
 		// 状態s'で行った時にQ値が最大となるような行動
 		int maxA = 0;
 		int x = agent.getState().getX();
@@ -40,7 +40,7 @@ public class QLearning {
 		int xd = agent.getStateDash().getX();
 		int xy = agent.getStateDash().getY();		
 		
-		for (int i = 0; i < Agent.Action.ActionList.size(); i++) {
+		for (int i = 0; i < Action.ActionList.size(); i++) {
 			if (q[xd][xy][maxA] < q[xd][xy][i]) {
 				maxA = i;	
 			}
@@ -53,7 +53,7 @@ public class QLearning {
 	public void printQ() {
 		for (int x = 0; x < Problem.MAZE_HEIGHT; x++) {
 			for (int y = 0; y < Problem.MAZE_WIDTH; y++) {
-				for (int a = 0; a < Agent.Action.ActionList.size(); a++) {
+				for (int a = 0; a < Action.ActionList.size(); a++) {
 					System.out.println("x:" + x + " y:" + y + " a:" + a + " Q:" + q[x][y][a]);
 				}
 			}
