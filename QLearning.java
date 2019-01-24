@@ -35,16 +35,19 @@ public class QLearning {
 	public void updateQ(int reward, Agent.Action action, Agent agent) {
 		// 状態s'で行った時にQ値が最大となるような行動
 		int maxA = 0;
+		int x = agent.getState().getX();
+		int y = agent.getState().getY();
+		int xd = agent.getStateDash().getX();
+		int xy = agent.getStateDash().getY();		
+		
 		for (int i = 0; i < Agent.Action.ActionList.size(); i++) {
-			if (q[agent.getSDPositionX()][agent.getSDPositionY()][maxA] < q[agent.getSDPositionX()][agent.getSDPositionY()][i]) {
+			if (q[xd][xy][maxA] < q[xd][xy][i]) {
 				maxA = i;	
 			}
 		}
 
 		// Q値の更新
-		q[agent.getPositionX()][agent.getPositionY()][action.getId()] 
-				= (1.0 - ALPHA) * q[agent.getPositionX()][agent.getPositionY()][action.getId()] 
-						+ ALPHA * (reward + GAMMA * q[agent.getSDPositionX()][agent.getSDPositionY()][maxA]);		
+		q[x][y][action.getId()] = (1.0 - ALPHA) * q[x][y][action.getId()] + ALPHA * (reward + GAMMA * q[xd][xy][maxA]);		
 	}
 
 	public void printQ() {

@@ -7,7 +7,7 @@ public class Main {
 		learn.initQ();               // すべてのQ値の初期化
 		for (int i = 0; i < QLearning.EPISODE; i++) {
 			Agent agent = new Agent(); // エージェントの初期化
-			while (!agent.isGoal(agent.getPositionX(), agent.getPositionY())) {
+			while (!agent.isGoal(agent.getState().getX(), agent.getState().getY())) {
 				agent.incrementStepNum();
 
 				Agent.Action selectAction = agent.eGreedy(learn.q);   // ε-greedy法で行動を選択

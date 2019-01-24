@@ -20,41 +20,29 @@ public class Agent{
 			return id;
 		}
 	}
-
+	
 	// エージェントの状態
-	private int sPosX;     // x座標
-	private int sPosY;     // y座標
-	private int sdPosX;    // 観測したx座標
-	private int sdPosY;    // 観測したy座標
-	private int stepNum; // 経過ステップ数
+	private State state;
+	private State stateDash;
+	private int stepNum;
 
 	private ArrayList<String> route = new ArrayList<>(); // 経路保存用配列
 
 	Agent(){
 		// エージェントをスタートにセット
-		sPosX = 1;
-		sPosY = 1;
-		sdPosX = 1;
-		sdPosY = 1;
+		state = new State(1, 1);
+		stateDash = new State(1, 1);
 		stepNum = 0;
 	}
 
-	public int getPositionX(){
-		return sPosX;
+	public State getState(){
+		return state;
 	}
-
-	public int getPositionY(){
-		return sPosY;
+	
+	public State getStateDash(){
+		return stateDash;
 	}
-
-	public int getSDPositionX(){
-		return sdPosX;
-	}
-
-	public int getSDPositionY(){
-		return sdPosY;
-	}
-
+	
 	public int getStepNum(){
 		return stepNum;
 	}
@@ -73,45 +61,45 @@ public class Agent{
 
 		// 観測後の状態に現在の状態を設定
 		// この関数内で観測後のものに書き換える
-		sdPosX = sPosX;
-		sdPosY = sPosY;
+		stateDash.setX(state.getX());
+		stateDash.setY(state.getY());
 
 		switch (act) {
 		case LEFT:
-			if (Problem.MAZE[sPosY][sPosX-1] == 1) { // 移動可能か
-				sdPosX--;
+			if (Problem.MAZE[state.getY()][state.getX()-1] == 1) { // 移動可能か
+				stateDash.setX(stateDash.getX()-1);
 			} else {					
 				reward -= QLearning.HIT_WALL_PENALTY; // 壁にぶつかった時
 			}
-			route.add("←" + "[" + String.valueOf(sdPosX) + "][" + String.valueOf(sdPosY) + "] ");
+			route.add("←" + "[" + String.valueOf(stateDash.getX()) + "][" + String.valueOf(stateDash.getY()) + "] ");
 			break;
 		case UP:
-			if (Problem.MAZE[sPosY-1][sPosX] == 1) { // 移動可能か
-				sdPosY--;
+			if (Problem.MAZE[state.getY()-1][state.getX()] == 1) { // 移動可能か
+				stateDash.setY(stateDash.getY()-1);
 			} else {
 				reward -= QLearning.HIT_WALL_PENALTY; // 壁にぶつかった時
 			}
-			route.add("↑" + "[" + String.valueOf(sdPosX) + "][" + String.valueOf(sdPosY) + "] ");
+			route.add("↑" + "[" + String.valueOf(stateDash.getX()) + "][" + String.valueOf(stateDash.getY()) + "] ");
 			break;
 		case RIGHT:				
-			if (Problem.MAZE[sPosY][sPosX+1] == 1) { // 移動可能か
-				sdPosX++;
+			if (Problem.MAZE[state.getY()][state.getX()+1] == 1) { // 移動可能か
+				stateDash.setX(stateDash.getX()+1);
 			} else {					
 				reward -= QLearning.HIT_WALL_PENALTY; // 壁にぶつかった時
 			}
-			route.add("→" + "[" + String.valueOf(sdPosX) + "][" + String.valueOf(sdPosY) + "] ");
+			route.add("→" + "[" + String.valueOf(stateDash.getX()) + "][" + String.valueOf(stateDash.getY()) + "] ");
 			break;
 		case DOWN:
-			if (Problem.MAZE[sPosY+1][sPosX] == 1) { // 移動可能か
-				sdPosY++;
+			if (Problem.MAZE[state.getY()+1][state.getX()] == 1) { // 移動可能か
+				stateDash.setY(stateDash.getY()+1);
 			} else {
 				reward -= QLearning.HIT_WALL_PENALTY; // 壁にぶつかった時
 			}
-			route.add("↓" + "[" + String.valueOf(sdPosX) + "][" + String.valueOf(sdPosY) + "] ");
+			route.add("↓" + "[" + String.valueOf(stateDash.getX()) + "][" + String.valueOf(stateDash.getY()) + "] ");
 			break;
 		}
 
-		if(isGoal(sdPosX, sdPosY)){ // ゴール報酬の設定
+		if(isGoal(stateDash.getX(), stateDash.getY())){ // ゴール報酬の設定
 			reward = QLearning.GOAL_REWARD;
 		}
 
@@ -127,7 +115,7 @@ public class Agent{
 			selectedAction = Action.getAction(rand.nextInt(Action.ActionList.size()));
 		} else {
 			for (int i = 1; i < Action.ActionList.size(); i++) {
-				if (qTable[sPosX][sPosY][selectedAction.getId()] < qTable[sPosX][sPosY][i]) {
+				if (qTable[state.getX()][state.getY()][selectedAction.getId()] < qTable[state.getX()][state.getY()][i]) {
 					selectedAction = Action.getAction(i);
 				}
 			}
@@ -139,8 +127,8 @@ public class Agent{
 
 	// 状態の更新
 	public void updateS() {
-		sPosX = sdPosX;
-		sPosY = sdPosY;
+		state.setX(stateDash.getX());
+		state.setY(stateDash.getY());
 	}
 
 	public boolean isGoal(int posX, int posY){
